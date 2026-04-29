@@ -36,3 +36,40 @@ MOVEMENT_KEYS = {
 score = 0
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pg.time.Clock()
+
+pg.init()
+
+FONT = pg.font.Font(None, 24)
+
+INSTRUCTION_TEXT = [
+    "+-----------------+",
+    "    Score: {}",
+    "+-----------------+",
+    "> Движение - клавиши стрелок",
+    "> Выход из игры - клавиша Esc",
+    "> Яблоки - красные",
+    "> Отрава - синяя",
+
+    "> За каждые 5 съеденных яблок:",
+    "  + 2 к скорости дижения",
+    "  + 1 отрава на экране",
+    "",
+    "Удачи в игре! И помни, что",
+    "каждая змейка мечтает стать Python =)"
+]
+class GameObject:
+    """Основной класс, представляющий фигуры в игре"""
+
+    def __init__(self, body_color=WHITE):
+        self.body_color = body_color
+        self.position = None
+
+    def draw(self):
+        """Отрисовка фигур с переопределением в наследуемых классах"""
+
+    def draw_cell(self, position, color=None):
+        """Отрисовка ячейки на экране"""
+        x, y = position
+        color = color or self.body_color
+        pg.draw.rect(screen, color, (x * GRID_SIZE, y * GRID_SIZE,
+                                     GRID_SIZE, GRID_SIZE))
