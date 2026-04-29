@@ -73,3 +73,11 @@ class GameObject:
         color = color or self.body_color
         pg.draw.rect(screen, color, (x * GRID_SIZE, y * GRID_SIZE,
                                      GRID_SIZE, GRID_SIZE))
+class Snake(GameObject):
+    """Наследуемый класс змейки"""
+
+    def __init__(self):
+        super().__init__(DARK_GREEN)
+        self.positions = [(GRID_WIDTH // 2, GRID_HEIGHT // 2)]
+        self.direction = random.choice([UP, DOWN, LEFT, RIGHT])
+        self.grow = False
