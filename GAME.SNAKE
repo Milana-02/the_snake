@@ -18,3 +18,21 @@ LIGHT_GRAY = (200, 200, 200)
 LIGHT_GREEN = (155, 188, 15)
 DARK_GREEN = (15, 56, 15)
 BOARD_BACKGROUND_COLOR = LIGHT_GREEN
+# Константы направлений
+UP = (0, -1)
+DOWN = (0, 1)
+LEFT = (-1, 0)
+RIGHT = (1, 0)
+
+# Словарь управления движениями
+MOVEMENT_KEYS = {
+    pg.K_UP: UP,
+    pg.K_DOWN: DOWN,
+    pg.K_LEFT: LEFT,
+    pg.K_RIGHT: RIGHT,
+}
+
+# Глобальные переменные
+score = 0
+screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+clock = pg.time.Clock()
