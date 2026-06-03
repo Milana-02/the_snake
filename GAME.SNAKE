@@ -26,7 +26,7 @@ DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
 
-# Словарь управления движениями
+# Словарь управления движениями, это делает код компактным!
 MOVEMENT_KEYS = {
     pg.K_UP: UP,
     pg.K_DOWN: DOWN,
@@ -34,14 +34,18 @@ MOVEMENT_KEYS = {
     pg.K_RIGHT: RIGHT,
 }
 
+
 # Глобальные переменные
 score = 0
+#счет игрока
+
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pg.time.Clock()
-
+#создаем окно игры
 pg.init()
 
 FONT = pg.font.Font(None, 24)
+# создание шрифта 
 
 INSTRUCTION_TEXT = [
     "+-----------------+",
@@ -51,18 +55,15 @@ INSTRUCTION_TEXT = [
     "> Выход из игры - клавиша Esc",
     "> Яблоки - красные",
     "> Отрава - синяя",
-
-    "> За каждые 5 съеденных яблок:",
+"> За каждые 5 съеденных яблок:",
     "  + 2 к скорости дижения",
     "  + 1 отрава на экране",
     "",
     "Удачи в игре! И помни, что",
     "каждая змейка мечтает стать Python =)"
 ]
-
-
 class GameObject:
-    """Основной класс, представляющий фигуры в игре"""
+    """Основной класс,который предостовляе фигуры в игре"""
 
     def __init__(self, body_color=WHITE):
         self.body_color = body_color
@@ -70,29 +71,33 @@ class GameObject:
 
     def draw(self):
         """Отрисовка фигур с переопределением в наследуемых классах"""
+# пока этот метод пустой
 
-    def draw_cell(self, position, color=None):
-        """Отрисовка ячейки на экране"""
+ def draw_cell(self, position, color=None):
+        """Метод для рисования клетки."""
         x, y = position
         color = color or self.body_color
+# тут мы распаковываем координаты, если цвет не передан, то берем стандартный
+
         pg.draw.rect(screen, color, (x * GRID_SIZE, y * GRID_SIZE,
                                      GRID_SIZE, GRID_SIZE))
-
-
 class Snake(GameObject):
-    """Наследуемый класс змейки"""
+    """Наследуемый класс от GameObject."""
 
     def __init__(self):
         super().__init__(DARK_GREEN)
+# вызываем конструктор
         self.positions = [(GRID_WIDTH // 2, GRID_HEIGHT // 2)]
         self.direction = random.choice([UP, DOWN, LEFT, RIGHT])
         self.grow = False
+# случайное направление
 
-    def move(self):
+def move(self):
         """Инициализация движения"""
         head = self.positions[0]
         new_head = ((head[0] + self.direction[0]) % GRID_WIDTH,
                     (head[1] + self.direction[1]) % GRID_HEIGHT)
+# новая позиция если был выход за границу
 
         if new_head in self.positions[4:]:
             game_over("self")
@@ -101,10 +106,11 @@ class Snake(GameObject):
         self.positions.insert(0, new_head)
         if not self.grow:
             self.positions.pop()
-        else:
+      # добавляем новую голову, а потом удаляем хвост, если не растем  
+else:
             self.grow = False
-
-    def draw(self):
+# сбрасываем рост
+def draw(self):
         """Отрисовка на игровом поле"""
         for segment in self.positions:
             self.draw_cell(segment)
@@ -113,7 +119,6 @@ class Snake(GameObject):
         """Смена направления движения змейки"""
         if (-new_direction[0], -new_direction[1]) != self.direction:
             self.direction = new_direction
-
     def reset(self):
         """Сброс параметров змейки"""
         self.positions = [(GRID_WIDTH // 2, GRID_HEIGHT // 2)]
@@ -138,8 +143,7 @@ class Apple(GameObject):
     def draw(self):
         """Отрисовка на игровом поле"""
         self.draw_cell(self.position)
-
-    def clear(self):
+def clear(self):
         """Удаление с игрового поля"""
         self.draw_cell(self.position, color=BOARD_BACKGROUND_COLOR)
 
@@ -149,9 +153,7 @@ class Apple(GameObject):
                          random.randint(0, GRID_HEIGHT - 1))
         while self.position in occupied_cells:
             self.position = (random.randint(0, GRID_WIDTH - 1),
-                             random.randint(0, GRID_HEIGHT - 1))
-
-
+random.randint(0, GRID_HEIGHT - 1))
 def draw_game_area(snake, apple, bombs):
     """Игровое поле"""
     screen.fill(BOARD_BACKGROUND_COLOR)
@@ -162,8 +164,6 @@ def draw_game_area(snake, apple, bombs):
 
     if apple.position is not None:
         apple.draw()
-
-
 def draw_info_area(score):
     """Информационное поле"""
     info_area = pg.Rect(SCREEN_WIDTH - 400, 0, 400, SCREEN_HEIGHT)
@@ -175,8 +175,6 @@ def draw_info_area(score):
         line = FONT.render(text, True, BLACK)
         screen.blit(line, (SCREEN_WIDTH - 390, y))
         y += 30
-
-
 def reset_game(snake, apple, bombs):
     """Сброс параметров игры"""
     global score, frame_delay, apples_eaten
@@ -187,8 +185,6 @@ def reset_game(snake, apple, bombs):
     bombs.clear()
     occupied_cells = [*snake.positions, *(bomb.position for bomb in bombs)]
     apple.randomize_position(occupied_cells)
-
-
 def game_over(collision_type):
     """Сценарий завершения игры"""
     font = pg.font.Font(None, 36)
@@ -205,8 +201,6 @@ def game_over(collision_type):
     pg.time.delay(2000)
 
     reset_game(snake, apple, bombs)
-
-
 def handle_keys(snake):
     """Обработка пользовательского ввода"""
     for event in pg.event.get():
@@ -235,8 +229,7 @@ def main():
     reset_game(snake, apple, bombs)
     frame_count = 0
     apples_eaten = 0
-
-    while True:
+while True:
         handle_keys(snake)
 
         if snake.move():
@@ -262,8 +255,7 @@ def main():
             score += 1
             apples_eaten += 1
             frame_count += 1
-
-            if apples_eaten % 5 == 0:
+if apples_eaten % 5 == 0:
                 frame_delay -= 10
                 occupied_cells = [*snake.positions, apple.position,
                                   *(bomb.position for bomb in bombs)]
@@ -271,8 +263,7 @@ def main():
                 if bomb is not None:
                     bomb.randomize_position(occupied_cells)
                 bombs.append(bomb)
-
-        draw_game_area(snake, apple, bombs)
+draw_game_area(snake, apple, bombs)
         draw_info_area(score)
 
         pg.display.flip()
@@ -280,4 +271,3 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
