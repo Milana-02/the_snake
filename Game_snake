@@ -103,14 +103,14 @@ class Snake(GameObject):
         )
 
         if new_head in self.positions[4:]:
-            return False  # Столкновение с собой
+            return False
 
         self.positions.insert(0, new_head)
         if not self.grow:
             self.positions.pop()
         else:
             self.grow = False
-        return True  # Движение успешно
+        return True
 
     def draw(self):
         """Отрисовка на игровом поле"""
@@ -119,7 +119,8 @@ class Snake(GameObject):
 
     def update_direction(self, new_direction):
         """Смена направления движения змейки"""
-        if (-new_direction[0], -new_direction[1]) != self.direction:
+        opposite_direction = (-new_direction[0], -new_direction[1])
+        if opposite_direction != self.direction:
             self.direction = new_direction
 
     def reset(self):
@@ -163,7 +164,7 @@ class Apple(GameObject):
 
 
 def draw_game_area(snake, apple, bombs):
-    """Игровое поле"""
+    """Отрисовка игрового поля"""
     screen.fill(BOARD_BACKGROUND_COLOR)
     snake.draw()
     for bomb in bombs:
@@ -173,14 +174,14 @@ def draw_game_area(snake, apple, bombs):
         apple.draw()
 
 
-def draw_info_area(score):
-    """Информационное поле"""
+def draw_info_area(current_score):
+    """Отрисовка информационной панели"""
     info_area = pg.Rect(SCREEN_WIDTH - 400, 0, 400, SCREEN_HEIGHT)
     pg.draw.rect(screen, LIGHT_GRAY, info_area)
     y = 10
     for text in INSTRUCTION_TEXT:
         if "{}" in text:
-            text = text.format(score)
+            text = text.format(current_score)
         line = FONT.render(text, True, BLACK)
         screen.blit(line, (SCREEN_WIDTH - 390, y))
         y += 30
@@ -213,6 +214,8 @@ def game_over(snake, apple, bombs, collision_type):
             True,
             RED
         )
+    else:
+        text = font.render("Game over!", True, RED)
 
     text_x = (
         (SCREEN_WIDTH - INFO_AREA_WIDTH) // 2 - text.get_width() // 2
@@ -257,23 +260,19 @@ def main():
     while True:
         handle_keys(snake)
 
-        # Движение змейки
         if not snake.move():
             game_over(snake, apple, bombs, "self")
             continue
 
-        # Проверка столкновения с собой
         if snake.get_head_position() in snake.positions[1:]:
             game_over(snake, apple, bombs, "self")
             continue
 
-        # Проверка столкновения с бомбами
         bomb_positions = [bomb.position for bomb in bombs]
         if snake.get_head_position() in bomb_positions:
             game_over(snake, apple, bombs, "bomb")
             continue
 
-        # Проверка съедания яблока
         if snake.get_head_position() == apple.position:
             occupied_cells = snake.positions + bomb_positions
             apple.randomize_position(occupied_cells)
@@ -281,9 +280,8 @@ def main():
             score += 1
             apples_eaten += 1
 
-            # Добавление бомб и увеличение скорости
             if apples_eaten % 5 == 0 and apples_eaten > 0:
-                if frame_delay > 20:  # Ограничиваем минимальную задержку
+                if frame_delay > 20:
                     frame_delay -= 10
                 occupied_cells = (
                     snake.positions + [apple.position] + bomb_positions
